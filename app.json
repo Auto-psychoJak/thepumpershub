@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "pumpershubMobile",
+    "slug": "pumpershubMobile",
+    "version": "1.0.0",
+    "platforms": ["ios", "android", "web"]
+  }
+}
