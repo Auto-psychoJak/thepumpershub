@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Modal, ScrollView, Dimensions } from 'react-native';
+import { View, FlatList, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { Text, Button, FAB, Card, Appbar, Menu, Divider, Provider } from 'react-native-paper';
 import { useAuth } from './AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { db } from './firebase';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import AddJobForm from './AddJobForm';
+import { addDummyData } from './utils/dummyData';
+import styles from './styles/styles';
 
 function Home() {
   const { currentUser, logout } = useAuth();
@@ -75,6 +77,13 @@ function Home() {
     setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
 
+  const handleAddDummyData = async () => {
+    if (currentUser) {
+      await addDummyData(currentUser.uid);
+      fetchJobs();
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -129,6 +138,9 @@ function Home() {
               horizontal={true} // Display items horizontally
               contentContainerStyle={styles.list}
             />
+            <Button mode="contained" onPress={handleAddDummyData} style={styles.dummyButton}>
+              Add Dummy Data
+            </Button>
             <FAB
               style={styles.fab}
               small
@@ -169,83 +181,5 @@ function Home() {
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    backgroundColor: '#f5f5f5',
-    paddingBottom: 100, // Ensure there is space at the bottom for the FAB
-  },
-  text: {
-    fontSize: 24,
-    marginBottom: 16,
-    color: '#333',
-    textAlign: 'center',
-  },
-  sortButton: {
-    marginTop: 16,
-    padding: 8,
-    backgroundColor: '#ddd',
-    borderRadius: 5,
-    alignSelf: 'center',
-  },
-  sortButtonText: {
-    color: '#333',
-  },
-  label: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 16,
-    color: '#333',
-    textAlign: 'center',
-  },
-  list: {
-    paddingHorizontal: 16,
-  },
-  card: {
-    marginRight: 16,
-    width: Dimensions.get('window').width * 0.8, // Adjust card width
-  },
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
-  },
-  modalView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-    backgroundColor: 'white',
-    padding: 20,
-    alignSelf: 'stretch',
-    margin: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 24,
-    marginBottom: 16,
-    color: '#333',
-    textAlign: 'center',
-  },
-  modalSubtitle: {
-    fontSize: 18,
-    marginBottom: 8,
-    color: '#333',
-    textAlign: 'center',
-  },
-  button: {
-    marginTop: 16,
-  },
-});
 
 export default Home;

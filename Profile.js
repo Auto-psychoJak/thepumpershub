@@ -1,95 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, Text } from 'react-native';
 import { useAuth } from './AuthContext';
 import { db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
 
-function Profile({ navigation }) {
+const Profile = () => {
   const { currentUser } = useAuth();
-  const [profileData, setProfileData] = useState({ name: '', role: '', ownsTruck: false });
-  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+  const [truckOwned, setTruckOwned] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (currentUser) {
-      fetchProfileData();
+      const fetchProfile = async () => {
+        const docRef = doc(db, 'users', currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const profile = docSnap.data();
+          setName(profile.name || '');
+          setRole(profile.role || '');
+          setTruckOwned(profile.truckOwned || false);
+        }
+      };
+      fetchProfile();
     }
   }, [currentUser]);
 
-  const fetchProfileData = async () => {
-    try {
-      const docRef = doc(db, 'users', currentUser.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setProfileData(docSnap.data());
-      } else {
-        console.log('No such document!');
-      }
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSave = async () => {
-    try {
+    if (currentUser) {
       const docRef = doc(db, 'users', currentUser.uid);
-      await setDoc(docRef, profileData);
+      await setDoc(docRef, { name, role, truckOwned });
       navigation.navigate('Home');
-    } catch (error) {
-      console.error('Error saving profile data:', error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        value={profileData.name}
-        onChangeText={(text) => setProfileData({ ...profileData, name: text })}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Role"
-        value={profileData.role}
-        onChangeText={(text) => setProfileData({ ...profileData, role: text })}
-      />
-      <Button mode="contained" onPress={handleSave} style={styles.button}>
-        Save
-      </Button>
-      <Button mode="text" onPress={() => navigation.navigate('Home')} style={styles.button}>
-        Home
-      </Button>
+    <View>
+      <Text>Hello, {currentUser.email}</Text>
+      <TextInput value={name} onChangeText={setName} placeholder="Name" />
+      <TextInput value={role} onChangeText={setRole} placeholder="Role" />
+      <Button title={truckOwned ? "Truck Owned: Yes" : "Truck Owned: No"} onPress={() => setTruckOwned(!truckOwned)} />
+      <Button title="Save" onPress={handleSave} />
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 16,
-  },
-  input: {
-    width: '100%',
-    padding: 8,
-    marginBottom: 16,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  button: {
-    marginTop: 16,
-  },
-});
+};
 
 export default Profile;
