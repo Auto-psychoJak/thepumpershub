@@ -1,67 +1,68 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    maxWidth: 800, // Limit width for larger screens (e.g., tablets)
+    alignSelf: 'center', // Center container for larger screens
+  },
   scrollContainer: {
     flexGrow: 1,
-    padding: 16,
   },
   text: {
-    fontSize: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  sortButton: {
+    marginBottom: 20,
+  },
+  sortButtonText: {
+    color: 'gray',
+  },
+  label: {
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  list: {
+    paddingBottom: 20,
+  },
   card: {
     marginBottom: 10,
-    marginRight: 10,
-    width: 200,
-  },
-  sortButton: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#ccc',
-    borderRadius: 5,
-  },
-  sortButtonText: {
-    fontSize: 16,
-  },
-  list: {
-    paddingVertical: 10,
+    marginHorizontal: 5,
   },
   dummyButton: {
-    marginVertical: 10,
+    marginTop: 20,
+    backgroundColor: '#6200ee',
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
+    backgroundColor: '#6200ee',
   },
   modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    backgroundColor: 'white',
+    padding: 20,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   modalSubtitle: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
   },
   button: {
-    marginTop: 10,
+    marginTop: 20,
+    backgroundColor: '#6200ee',
   },
 });
 
