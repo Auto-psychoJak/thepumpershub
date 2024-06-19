@@ -1,12 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    maxWidth: 800, // Limit width for larger screens (e.g., tablets)
-    alignSelf: 'center', // Center container for larger screens
-  },
+  
   scrollContainer: {
     flexGrow: 1,
   },

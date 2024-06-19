@@ -2,11 +2,13 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Appbar, Menu, Provider } from 'react-native-paper';
+import { View, ScrollView } from 'react-native';
 import Home from './Home';
 import Profile from './Profile';
 import Login from './Login';
 import SignUp from './SignUp';
 import { AuthProvider } from './AuthContext';
+import commonStyles from './styles/common';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +34,7 @@ function App() {
   return (
     <AuthProvider>
       <Provider>
+        <View style={commonStyles.container}>
         <NavigationContainer ref={navigationRef}>
           <Appbar.Header>
             <Appbar.Content title="Pumpers Hub" />
@@ -54,6 +57,7 @@ function App() {
             <Stack.Screen name="SignUp" component={SignUp} />
           </Stack.Navigator>
         </NavigationContainer>
+        </View>
       </Provider>
     </AuthProvider>
   );

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { useAuth } from './AuthContext';
+import { styles } from './styles/LoginStyles';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -28,25 +29,5 @@ function Login() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  text: {
-    fontSize: 24,
-    marginBottom: 16,
-  },
-  error: {
-    color: 'red',
-    marginBottom: 16,
-  },
-  button: {
-    marginTop: 16,
-  },
-});
 
 export default Login;

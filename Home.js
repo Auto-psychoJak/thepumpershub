@@ -7,7 +7,7 @@ import { db } from './firebase';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import AddJobForm from './AddJobForm';
 import { addDummyData } from './utils/dummyData';
-import styles from './styles/styles';
+import styles from './styles/HomeStyles';
 
 function Home() {
   const { currentUser, logout } = useAuth();
