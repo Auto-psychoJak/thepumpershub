@@ -8,6 +8,7 @@ import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import AddJobForm from './AddJobForm';
 import { addDummyData } from './utils/dummyData';
 import styles from './styles/HomeStyles';
+import commonStyles from './styles/common';
 
 function Home() {
   const { currentUser, logout } = useAuth();
@@ -85,28 +86,32 @@ function Home() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const day = date.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2);
+    return `${date.getMonth() + 1}.${date.getDate()}.${date.getFullYear().toString().slice(2)} ${day}`;
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleJobPress(item)}>
-      <Card style={styles.card}>
-        <Card.Title title={item.companyName} subtitle={`Date: ${formatDate(item.date)}`} />
-        <Card.Content>
-          <Text>Address: {item.address}</Text>
-          <Text>City: {item.city}</Text>
-          <Text>Total Yards: {item.totalYards}</Text>
-          <Text>Total Amount: ${item.totalAmount}</Text>
-          <Text>Pay with: {item.paymentMethod}</Text>
-        </Card.Content>
-      </Card>
+      <View style={styles.cardContainer}>
+        <Text style={styles.dateText}>{formatDate(item.date)}</Text>
+        <Card style={styles.card}>
+          <Card.Title subtitle={item.companyName} />
+          <Card.Content>
+            <Text>Address: {item.address}</Text>
+            <Text>City: {item.city}</Text>
+            <Text>Total Yards: {item.totalYards}</Text>
+            <Text>Total Amount: ${item.totalAmount}</Text>
+            <Text>Pay with: {item.paymentMethod}</Text>
+          </Card.Content>
+        </Card>
+      </View>
     </TouchableOpacity>
   );
 
   return (
     <Provider>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+      <ScrollView contentContainerStyle={commonStyles.scrollContainer}>
+        <View style={commonStyles.container}>
           {currentUser ? (
             <>
               <Text style={styles.text}>Hello, {currentUser.email}!</Text>
@@ -123,7 +128,7 @@ function Home() {
                 horizontal={true}
                 contentContainerStyle={styles.list}
               />
-              <Button mode="contained" onPress={handleAddDummyData} style={styles.dummyButton}>
+              <Button mode="contained" onPress={handleAddDummyData} style={styles.dummyButton} labelStyle={commonStyles.buttonLabel}>
                 Add Dummy Data
               </Button>
               <FAB
@@ -142,8 +147,8 @@ function Home() {
                 <View style={styles.modalView}>
                   {selectedJob ? (
                     <>
-                      <Text style={styles.modalTitle}>{selectedJob.companyName}</Text>
                       <Text style={styles.modalSubtitle}>Date: {formatDate(selectedJob.date)}</Text>
+                      <Text style={styles.modalTitle}>{selectedJob.companyName}</Text>
                       <Text>Address: {selectedJob.address}</Text>
                       <Text>City: {selectedJob.city}</Text>
                       <Text>Total Yards: {selectedJob.totalYards}</Text>

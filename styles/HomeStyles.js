@@ -21,7 +21,6 @@ const HomeStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
-    color: 'white',
   },
   list: {
     paddingVertical: 20,
@@ -33,11 +32,16 @@ const HomeStyles = StyleSheet.create({
     backgroundColor: '#333',
     borderRadius: 10,
   },
+  dateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
   dummyButton: {
     marginVertical: 10,
-    // backgroundColor: '#6200ee',
-    width: 100,
-    color: 'white',
+    backgroundColor: '#6200ee',
   },
   fab: {
     position: 'absolute',
@@ -77,12 +81,6 @@ const HomeStyles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 20,
-    color: 'gray',
   },
 });
 

@@ -7,6 +7,7 @@ import Home from './Home';
 import Profile from './Profile';
 import Login from './Login';
 import SignUp from './SignUp';
+import MonthView from './components/MonthView';
 import { AuthProvider } from './AuthContext';
 import commonStyles from './styles/common';
 
@@ -19,6 +20,11 @@ function App() {
   const handleProfile = () => {
     setMenuVisible(false);
     navigationRef.current?.navigate('Profile');
+  };
+
+  const handleMonth = () => {
+    setMenuVisible(false);
+    navigationRef.current?.navigate('Month');
   };
 
   const handleHome = () => {
@@ -45,14 +51,16 @@ function App() {
                 <Appbar.Action icon="menu" color="white" onPress={() => setMenuVisible(true)} />
               }
             >
-              <Menu.Item onPress={handleProfile} title="Profile" />
               <Menu.Item onPress={handleHome} title="Home" />
+              <Menu.Item onPress={handleProfile} title="Profile" />
+              <Menu.Item onPress={handleMonth} title="Month" />
               <Menu.Item onPress={handleLogout} title="Logout" />
             </Menu>
           </Appbar.Header>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Month" component={MonthView} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="SignUp" component={SignUp} />
           </Stack.Navigator>
