@@ -58,8 +58,8 @@ function App() {
             </Menu>
           </Appbar.Header>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Month" component={MonthView} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="SignUp" component={SignUp} />

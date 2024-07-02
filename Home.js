@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, TouchableOpacity, Modal, ScrollView } from 'react-native';
-import { Text, Button, FAB, Card, Provider } from 'react-native-paper';
+import { View, FlatList, TouchableOpacity, Modal, ScrollView, StyleSheet } from 'react-native';
+import { Text, Button, FAB, Card, Appbar, Menu, Divider, Provider } from 'react-native-paper';
 import { useAuth } from './AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { db } from './firebase';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import AddJobForm from './AddJobForm';
 import { addDummyData } from './utils/dummyData';
-import styles from './styles/HomeStyles';
-import commonStyles from './styles/common';
+import deleteOldJobs from './utils/cleanup';
+import commonStyles from './styles/styles';
 
 function Home() {
   const { currentUser, logout } = useAuth();
@@ -18,6 +18,7 @@ function Home() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState('desc');
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
     if (!currentUser) {
@@ -84,93 +85,120 @@ function Home() {
     }
   };
 
+  const handleDeleteOldJobs = async () => {
+    if (currentUser) {
+      await deleteOldJobs(currentUser.uid);
+      fetchJobs();
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const day = date.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2);
-    return `${date.getMonth() + 1}.${date.getDate()}.${date.getFullYear().toString().slice(2)} ${day}`;
+    return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleJobPress(item)}>
-      <View style={styles.cardContainer}>
-        <Text style={styles.dateText}>{formatDate(item.date)}</Text>
-        <Card style={styles.card}>
-          <Card.Title subtitle={item.companyName} />
-          <Card.Content>
-            <Text>Address: {item.address}</Text>
-            <Text>City: {item.city}</Text>
-            <Text>Total Yards: {item.totalYards}</Text>
-            <Text>Total Amount: ${item.totalAmount}</Text>
-            <Text>Pay with: {item.paymentMethod}</Text>
-          </Card.Content>
-        </Card>
-      </View>
+      <Card style={styles.card}>
+        <Card.Title title={item.companyName} subtitle={`Date: ${formatDate(item.date)}`} />
+        <Card.Content>
+          <Text>Address: {item.address}</Text>
+          <Text>City: {item.city}</Text>
+          <Text>Total Yards: {item.totalYards}</Text>
+          <Text>Total Amount: ${item.totalAmount}</Text>
+          <Text>Pay with: {item.paymentMethod}</Text>
+        </Card.Content>
+      </Card>
     </TouchableOpacity>
   );
 
   return (
     <Provider>
-      <ScrollView contentContainerStyle={commonStyles.scrollContainer}>
-        <View style={commonStyles.container}>
-          {currentUser ? (
-            <>
-              <Text style={styles.text}>Hello, {currentUser.email}!</Text>
-              <TouchableOpacity onPress={toggleSortOrder} style={styles.sortButton}>
-                <Text style={styles.sortButtonText}>Toggle Sort Order: {sortOrder === 'asc' ? 'Ascending' : 'Descending'}</Text>
-              </TouchableOpacity>
-              <Text style={styles.label}>Recent</Text>
-              <FlatList
-                data={jobs}
-                renderItem={renderItem}
-                keyExtractor={item => item.id}
-                onRefresh={fetchJobs}
-                refreshing={loading}
-                horizontal={true}
-                contentContainerStyle={styles.list}
-              />
-              <Button mode="contained" onPress={handleAddDummyData} style={styles.dummyButton} labelStyle={commonStyles.buttonLabel}>
-                Add Dummy Data
-              </Button>
-              <FAB
-                style={styles.fab}
-                small
-                icon="plus"
-                label="Add Job"
-                onPress={handleAddJob}
-              />
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={handleCloseModal}
-              >
-                <View style={styles.modalView}>
-                  {selectedJob ? (
-                    <>
-                      <Text style={styles.modalSubtitle}>Date: {formatDate(selectedJob.date)}</Text>
-                      <Text style={styles.modalTitle}>{selectedJob.companyName}</Text>
-                      <Text>Address: {selectedJob.address}</Text>
-                      <Text>City: {selectedJob.city}</Text>
-                      <Text>Total Yards: {selectedJob.totalYards}</Text>
-                      <Text>Total Amount: ${selectedJob.totalAmount}</Text>
-                      <Text>Pay with: {selectedJob.paymentMethod}</Text>
-                      <Button mode="contained" onPress={handleCloseModal} style={styles.button}>
-                        Close
-                      </Button>
-                    </>
-                  ) : (
-                    <AddJobForm onClose={handleCloseModal} />
-                  )}
-                </View>
-              </Modal>
-            </>
-          ) : (
-            <Text>Loading...</Text>
-          )}
-        </View>
+      <Appbar.Header>
+        <Appbar.Content title="Home" />
+        
+      </Appbar.Header>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {currentUser ? (
+          <>
+            <Text style={styles.text}>Hello, {currentUser.email}!</Text>
+            <TouchableOpacity onPress={toggleSortOrder} style={styles.sortButton}>
+              <Text style={styles.sortButtonText}>Toggle Sort Order: {sortOrder === 'asc' ? 'Ascending' : 'Descending'}</Text>
+            </TouchableOpacity>
+            <Text style={styles.label}>Recent</Text>
+            <FlatList
+              data={jobs}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+              onRefresh={fetchJobs}
+              refreshing={loading}
+              horizontal={true}
+              contentContainerStyle={styles.list}
+            />
+            <Button mode="contained" onPress={handleAddDummyData} style={styles.dummyButton}>
+              Add Dummy Data
+            </Button>
+            <Button mode="contained" onPress={handleDeleteOldJobs} style={styles.deleteButton}>
+              Delete Old Jobs
+            </Button>
+            <FAB
+              style={styles.fab}
+              small
+              icon="plus"
+              label="Add Job"
+              onPress={handleAddJob}
+            />
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={handleCloseModal}
+            >
+              <View style={styles.modalView}>
+                {selectedJob ? (
+                  <>
+                    <Text style={styles.modalTitle}>{selectedJob.companyName}</Text>
+                    <Text style={styles.modalSubtitle}>Date: {formatDate(selectedJob.date)}</Text>
+                    <Text>Address: {selectedJob.address}</Text>
+                    <Text>City: {selectedJob.city}</Text>
+                    <Text>Total Yards: {selectedJob.totalYards}</Text>
+                    <Text>Total Amount: ${selectedJob.totalAmount}</Text>
+                    <Text>Pay with: {selectedJob.paymentMethod}</Text>
+                    <Button mode="contained" onPress={handleCloseModal} style={styles.button}>
+                      Close
+                    </Button>
+                  </>
+                ) : (
+                  <AddJobForm onClose={handleCloseModal} />
+                )}
+              </View>
+            </Modal>
+          </>
+        ) : (
+          <Text>Loading...</Text>
+        )}
       </ScrollView>
     </Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  ...commonStyles, // Include common styles
+  deleteButton: {
+    marginTop: 10,
+    backgroundColor: '#d9534f',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 100,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+  // Add any additional styles here
+});
 
 export default Home;
